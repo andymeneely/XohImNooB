@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'rspec/core/rake_task'
 
 desc 'Download word list to en.txt'
 task :default do
@@ -9,3 +10,5 @@ task :default do
   end
   puts "Word file saved."
 end
+
+RSpec::Core::RakeTask.new(:spec)
