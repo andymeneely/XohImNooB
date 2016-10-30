@@ -8,9 +8,9 @@ puts "Prepping dictionary..."
 @words = File.read('en.txt').split
 @words << 'im' # ...because
 @words << 'noob' # ...because
-puts "  ...adding l33t words"
-l337_words = @words.inject([]) { |arr, w| arr + XohImNooB::L33tWords.make(w) }
-@words += l337_words
+# puts "  ...adding l33t words"
+# l337_words = @words.inject([]) { |arr, w| arr + XohImNooB::L33tWords.make(w) }
+# @words += l337_words
 puts "  ...sorting"
 @words.sort!
 @awesomeness = XohImNooB::Awesomeness.new(@words)
