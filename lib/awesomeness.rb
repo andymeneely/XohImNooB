@@ -5,41 +5,46 @@ module XohImNooB
     end
 
     def of(digest)
-      awe = 0
-      num_words = 0
-      num_letters = 0
-      long_word_bonus = 0
-      left = 1000
-      right = -1000
       digest_downcase = digest.downcase
-      word_list = []
+      best_word_list = []
       @words.each do |word|
         if digest_downcase.include? word
-          num_words += 1
-          num_letters += word.size
-          long_word_bonus += word.size ** word.size if word.size > 2
-
-          word_start = digest_downcase.index(word)
-          left = word_start < left ? word_start : left
-
-          word_end = word_start + word.size
-          right = word_end > right ? word_end : right
-
-          word_list << word
-          # puts "word: #{word}\nnum_words: #{num_words}\nnum_letters: #{num_letters}\nword_start: #{word_start}\nword_end: #{word_end}\nleft: #{left}\nright: #{right}\n\n"
+          word_list = [word]
+          i = digest_downcase.index(word) + word.size
+          word_list += finish_phrase(digest_downcase[i..-1])
+          if num_letters(word_list) > num_letters(best_word_list)
+            best_word_list = word_list
+          end
         end
       end
-      return [0, nil] if num_words == 0 || right - left != num_letters
-      # denom = right - left - num_letters + 1
-      # if denom == 0
-      #   puts "Huh?? digest: #{digest}\nnum_words: #{num_words}\nnum_letters: #{num_letters}\nleft: #{left}\nright: #{right}\n#{word_list}\n\n"
-      #   return [0, nil]
-      # else
-      awesomeness = (num_letters * num_words * long_word_bonus)
-      awesome_str = "#{digest[left..right]} (#{word_list.join(' ')})"
-      return awesomeness, awesome_str
-      # end
+      return [0, nil] if best_word_list.empty?
+      n = num_letters(best_word_list)
+      start = digest_downcase.index(best_word_list[0])
+      awesome_str = "#{digest[start..(start + n - 1)]} (#{best_word_list.join(' ')})"
+      return n, awesome_str
     end
+
+    def num_letters(word_list)
+      word_list.inject(0) { |num, w| num + w.size }
+    end
+
+    def finish_phrase(digest_tail, word_list = [])
+      return word_list if digest_tail.empty?
+      digest_tail.size.downto(1).each do |i|
+        sub_str = digest_tail[0..i-1]
+        if found(sub_str)
+          word_list << sub_str
+          return finish_phrase(digest_tail[i..-1], word_list)
+        end
+      end
+      return word_list
+    end
+
+    def found(sub_str)
+      found = (!(@words.bsearch { |w| w.eql? sub_str }).nil?) ||
+              (@words[0].eql? sub_str)
+    end
+
   end
 
 end
