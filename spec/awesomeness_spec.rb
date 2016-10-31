@@ -4,31 +4,32 @@ describe XohImNooB::Awesomeness do
   let(:awe) { XohImNooB::Awesomeness.new(%w(im noob oh)) }
 
   it 'computes properly for "oh"' do
-    expect(awe.of('oh')).to eq  [2, 'oh (oh)']
+    expect(awe.of('oh')).to eq  [2, 'oh', %w(oh)]
   end
 
   it 'computes properly for "ohIm"' do
-    expect(awe.of('ohIm')).to eq  [4, 'ohIm (oh im)']
+    expect(awe.of('ohIm')).to eq  [4, 'ohIm', %w(oh im)]
   end
 
   it 'computes properly for "XohIm"' do
-    expect(awe.of('XohIm')).to eq  [4, 'ohIm (oh im)']
+    expect(awe.of('XohIm')).to eq  [4, 'ohIm' , %w(oh im)]
   end
 
   it 'computes properly for "ohxIm"' do
-    expect(awe.of('ohxIm')).to eq  [2, "Im (im)"]
+    expect(awe.of('ohxIm')).to eq  [2, 'Im', %w(im)]
   end
 
   it 'computes properly for "XohImNooBa"' do
-    expect(awe.of('XohImNooB')). to eq [8, 'ohImNooB (oh im noob)']
+    expect(awe.of('XohImNooB')). to eq [8, 'ohImNooB', %w(oh im noob)]
   end
 
   it 'computes properly for "XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg="' do
-    expect(awe.of('XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=')). to eq [8, 'ohImNooB (oh im noob)']
+    expect(awe.of('XohImNooBHFR0OVvjcYpJ3NgPQ1qq73WKhHvch0VQtg=')).
+           to eq [8, 'ohImNooB', %w(oh im noob)]
   end
 
   it 'computes properly for "ohImXNooB"' do
-    expect(awe.of('ohImXNooB')).to eq  [4, "NooB (noob)"]
+    expect(awe.of('ohImXNooB')).to eq  [4, 'NooB', %w(noob)]
   end
 
   context :finish_phrase do

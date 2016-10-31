@@ -17,10 +17,17 @@ puts "  ...sorting"
 puts "Done! #{@words.size} words in dictionary"
 
 puts "Looking for awesome hashes..."
-@words.each do |word|
+# @words.each do |word|
+@words.sample(10000).each do |word| # choose some at random
   digest = Digest::SHA256.new.base64digest(word)
-  awe, awesome_str = @awesomeness.of digest
-  if awe > 5
-    puts "base64(sha256(#{word})) = #{digest} (#{awesome_str}) @ #{awe}"
+  awe, sub_str, word_list = @awesomeness.of(digest)
+  if awe > 7
+    puts "base64(sha256(#{word})) = #{digest} --> #{sub_str} (#{word_list.join(' ')})@ #{awe}"
   end
 end
+
+
+# Some good examples
+# base64(sha256(acceding)) = 9aRghAa3h4GLpQsWtCQonVy50l6ZbqLw2gEvADDg8uE= --> aRghAa (arghaa)@ 6
+# base64(sha256(acentrics)) = DENiUh0szFvQSfCq7j0S75pBROMCoM/w4bF4Ph1/KO4= --> ROMCoM (romcom)@ 6
+# base64(sha256(actinometries)) = zILNIAhl0H+ZZIJ0vahUVLoLigoRs/0D/cY3akW00js= --> LoLigo (loligo)@ 6

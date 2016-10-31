@@ -11,7 +11,8 @@ module XohImNooB
         if digest_downcase.include? word
           word_list = [word]
           i = digest_downcase.index(word) + word.size
-          word_list += finish_phrase(digest_downcase[i..-1])
+          rest = digest_downcase[i..-1]
+          word_list += finish_phrase(rest)
           if num_letters(word_list) > num_letters(best_word_list)
             best_word_list = word_list
           end
@@ -20,8 +21,8 @@ module XohImNooB
       return [0, nil] if best_word_list.empty?
       n = num_letters(best_word_list)
       start = digest_downcase.index(best_word_list[0])
-      awesome_str = "#{digest[start..(start + n - 1)]} (#{best_word_list.join(' ')})"
-      return n, awesome_str
+      sub_str = digest[start..(start + n - 1)]
+      return n, sub_str, best_word_list
     end
 
     def num_letters(word_list)
@@ -32,6 +33,13 @@ module XohImNooB
       return word_list if digest_tail.empty?
       digest_tail.size.downto(1).each do |i|
         sub_str = digest_tail[0..i-1]
+        if digest_tail.start_with? 'noob'
+          if sub_str.eql? 'noob'
+            # require 'byebug'
+            # byebug
+          end
+        end
+
         if found(sub_str)
           word_list << sub_str
           return finish_phrase(digest_tail[i..-1], word_list)
@@ -41,8 +49,7 @@ module XohImNooB
     end
 
     def found(sub_str)
-      found = (!(@words.bsearch { |w| w.eql? sub_str }).nil?) ||
-              (@words[0].eql? sub_str)
+      @words.bsearch { |w| w >= sub_str } == sub_str
     end
 
   end
