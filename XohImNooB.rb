@@ -1,6 +1,7 @@
 require 'digest'
 require_relative 'lib/awesomeness'
 require_relative 'lib/l33t_words'
+require_relative 'lib/utf_highlight'
 
 raise 'No word file (run `rake` to download)' unless File.exists? 'en.txt'
 
@@ -22,7 +23,8 @@ puts "Looking for awesome hashes..."
   digest = Digest::SHA256.new.base64digest(word)
   awe, sub_str, word_list = @awesomeness.of(digest)
   if awe > 7
-    puts "base64(sha256(#{word})) = #{digest} --> #{sub_str} (#{word_list.join(' ')})@ #{awe}"
+    utfd_digest = XohImNooB::UTFHighlight.go(digest, sub_str)
+    puts "base64(sha256(#{word})) = #{utfd_digest} (#{word_list.join(' ')})@ #{awe}"
   end
 end
 
