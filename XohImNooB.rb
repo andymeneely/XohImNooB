@@ -17,17 +17,18 @@ puts "  ...sorting"
 @awesomeness = XohImNooB::Awesomeness.new(@words)
 puts "Done! #{@words.size} words in dictionary"
 
-puts "Looking for awesome hashes..."
-# @words.each do |word|
-@words.sample(10000).each do |word| # choose some at random
+puts "Looking for awesome hashes @ #{Time.now}..."
+@words.each do |word|
+# @words.sample(10000).each do |word| # choose some at random
   digest = Digest::SHA256.new.base64digest(word)
   awe, sub_str, word_list = @awesomeness.of(digest)
-  if awe > 7
-    utfd_digest = XohImNooB::UTFHighlight.go(digest, sub_str)
-    puts "base64(sha256(#{word})) = #{utfd_digest} (#{word_list.join(' ')})@ #{awe}"
+  if awe > 9
+    # digest = XohImNooB::UTFHighlight.go(digest, sub_str)
+    puts "base64(sha256(#{word})) = #{digest} (#{word_list.join(' ')})@ #{awe}"
   end
 end
 
+puts "Done! #{Time.now}"
 
 # Some good examples
 # base64(sha256(acceding)) = 9aRghAa3h4GLpQsWtCQonVy50l6ZbqLw2gEvADDg8uE= --> aRghAa (arghaa)@ 6
