@@ -39,3 +39,4 @@ puts "Done! #{Time.now}."
 # base64(sha256(audiometrically)) = WkM9TkCcsYATsMnsuILRICibR̭ḘC̭K̭b̭i̭b̭r̭ḘA̭m̭i0c7W0eA= (reck bib ream)@ 11
 # base64(sha256(throbber)) = ILXfḓi̭m̭A̭ṰṱṰh̭A̭ṱy6lV5i9xBn1dxbzjn+wmsR7XtD2io= (di matt that)
 # base64(sha256(beauteously)) = R8jw2rMṊo̭B̭g̭I̭F̭ṰS̭ṋo̭ujJZbA3oNvj3NEDNJ8o2rSACY4= (nob gifts no)@ 10
+# base64(sha256(quinoa keramic)) = /+VZCn6TSH61pk/Kq8OPqZXqGo̭f̭ṱI̭c̭s̭Ṋḙṱw̭H̭Y̭ZUsIHc= (of tics net why)@
