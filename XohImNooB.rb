@@ -17,15 +17,15 @@ puts "  ...sorting"
 @awesomeness = XohImNooB::Awesomeness.new(@words)
 puts "Done! #{@words.size} words in dictionary"
 
-n = 1_000_000
+n = 10_000_000
 puts "Sampling awesomeness in #{n} hashes @ #{Time.now}..."
-n.times do 
+n.times do |i|
   word = @words.sample(2).join(' ')
   digest = Digest::SHA256.new.base64digest(word)
   awe, sub_str, word_list = @awesomeness.of(digest)
   if awe > 9
     digest = XohImNooB::UTFHighlight.go(digest, sub_str)
-    puts "base64(sha256(#{word})) = #{digest} (#{word_list.join(' ')})@ #{awe}"
+    puts "base64(sha256(#{word})) = #{digest} (#{word_list.join(' ')})@ #{awe} on #{i} of #{n}"
   end
 end
 
@@ -40,3 +40,8 @@ puts "Done! #{Time.now}."
 # base64(sha256(throbber)) = ILXfḓi̭m̭A̭ṰṱṰh̭A̭ṱy6lV5i9xBn1dxbzjn+wmsR7XtD2io= (di matt that)
 # base64(sha256(beauteously)) = R8jw2rMṊo̭B̭g̭I̭F̭ṰS̭ṋo̭ujJZbA3oNvj3NEDNJ8o2rSACY4= (nob gifts no)@ 10
 # base64(sha256(quinoa keramic)) = /+VZCn6TSH61pk/Kq8OPqZXqGo̭f̭ṱI̭c̭s̭Ṋḙṱw̭H̭Y̭ZUsIHc= (of tics net why)@
+# ̭̭base64(sha256(menominees mammillaria)) = 69fSQFhwdh̭i̭B̭Ṷf̭F̭y̭o̭ṊṶṰS̭Ḙf̭UKAzOhKonUSe/mtS2Z2Y= (hi buffy on uts ef)@ 14 on 358236 of 10000000
+# base64(sha256(unambiguous stenographically)) = CGyfdQUSiKq3JzTpoOo+rm̭o̭a̭ṷr̭m̭m̭z̭o̭a̭fVrLl+ndR4ZE= (moa ur mm zoa)@ 10 on 359934 of 10000000
+# base64(sha256(metalling legislations)) = 396/ṰA̭V̭ṷS̭i̭S̭v̭i̭m̭YKRLYIiLp3v2wuF4LjzM7vHBGO3Vk= (tav us is vim)@ 10 on 343158 of 10000000
+# base64(sha256(overinsistent seaning)) = vglQcbZQA̭i̭ḙM̭O̭ṶM̭A̭Ḽp̭ṷH̭R̭I̭B̭p30msWYDdRRit1G3Hj5Q= (ai emo um alp uh rib)@ 15 on 387137 of 10000000
+# base64(sha256(counterprogrammings cuneatic)) = jZhF̭o̭Y̭F̭ṷṊO̭x̭Y̭o̭p̭iKT2H+Ih7pgPHjpCTxYTQ4dReBNNQ= (foy fun oxy op)@ 11 on 424502 of 10000000
