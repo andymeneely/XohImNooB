@@ -1,7 +1,10 @@
 [package]
-name = "XohImNoob"
+name = "xohimnoob"
 version = "0.1.0"
 authors = ["Andy Meneely <andy@se.rit.edu>"]
 edition = "2018"
 
 [dependencies]
+sha2 = "0.9.8"
+base64 = "0.13.0"
+hex-literal = "0.3.3"
