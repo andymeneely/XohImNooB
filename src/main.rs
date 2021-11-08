@@ -4,6 +4,7 @@ use rand::seq::SliceRandom;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
+use std::fmt;
 
 pub fn xoh_hash(s: &String) -> String {
     return base64::encode(Sha256::digest(s.as_bytes()));
@@ -14,27 +15,134 @@ pub fn next_word(word_list : &Vec<String>) -> String {
     return word_list.choose(&mut rng).expect("Error getting word").to_string();
 }
 
-pub fn load_words() -> Vec<String> {
+pub fn load_words(only_large : bool) -> Vec<String> {
     let file = File::open(Path::new("data/xkcd.txt")).expect("Error opening words file");
     let mut v = Vec::new();
     for line in io::BufReader::new(file).lines() {
       let clean = line.expect("Reading error").replace("'","");
-      v.push(clean);
+      if clean.len() > 1 {
+        if only_large {
+            if clean.len() > 3 {
+                v.push(clean);
+            }
+        } else {
+            v.push(clean);
+        }
+      }
     }
     return v;
 }
 
-pub fn mine_password(hash : &String, words : &Vec<String>) -> (usize, Vec<String>) {
-    let mut score = 0;
-    let mut found = Vec::new();
-    let hash = hash.to_ascii_lowercase();
-    for word in words {
-        if hash.contains(word.as_str()) {
-            score += word.len() * word.len();
-            found.push(word.to_string());
+pub struct AwesomeHash {
+    decorated_hash : String,
+    score: u32
+}
+
+impl fmt::Display for AwesomeHash {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}\t{}", self.decorated_hash, self.score)
+    }
+}
+
+pub fn decorate(hash: &str, word: &str) -> String {
+    let decorated_word:String = word.chars().map(|c| match c{
+        'a' => '🅐',
+       'b' => '🅑',
+       'c' => '🅒',
+       'd' => '🅓',
+       'e' => '🅔',
+       'f' => '🅕',
+       'g' => '🅖',
+       'h' => '🅗',
+       'i' => '🅘',
+       'j' => '🅙',
+       'k' => '🅚',
+       'l' => '🅛',
+       'm' => '🅜',
+       'n' => '🅝',
+       'o' => '🅞',
+       'p' => '🅟',
+       'q' => '🅠',
+       'r' => '🅡',
+       's' => '🅢',
+       't' => '🅣',
+       'u' => '🅤',
+       'v' => '🅥',
+       'w' => '🅦',
+       'x' => '🅧',
+       'y' => '🅨',
+       'z' => '🅩',
+       'A' => '🅐',
+       'B' => '🅑',
+       'C' => '🅒',
+       'D' => '🅓',
+       'E' => '🅔',
+       'F' => '🅕',
+       'G' => '🅖',
+       'H' => '🅗',
+       'I' => '🅘',
+       'J' => '🅙',
+       'K' => '🅚',
+       'L' => '🅛',
+       'M' => '🅜',
+       'N' => '🅝',
+       'O' => '🅞',
+       'P' => '🅟',
+       'Q' => '🅠',
+       'R' => '🅡',
+       'S' => '🅢',
+       'T' => '🅣',
+       'U' => '🅤',
+       'V' => '🅥',
+       'W' => '🅦',
+       'X' => '🅧',
+       'Y' => '🅨',
+       'Z' => '🅩',
+        _ => c
+    }).collect();
+    return hash.replace(word, decorated_word.as_str());
+
+}
+
+pub fn finish_awesomeness(hash : &String, big_word : &str, all_words : &Vec<String>) -> Vec<AwesomeHash> {
+    let mut score = big_word.len() as u32 * big_word.len() as u32;
+    let mut awe_list = Vec::new();
+    let mut word_list = Vec::new();
+
+    let mut decorated_hash = decorate(hash, big_word);
+    let mut done  = false;
+    while !done {
+        let mut found_word = false;
+        for word in all_words { //this isn't exhaustive but whatevs
+            if decorated_hash.contains(word) {
+                done = false;
+                found_word = true;
+                decorated_hash = decorate(&decorated_hash, word);
+                word_list.push(word);
+                score += word.len() as u32 * word.len() as u32;
+            }
+        }
+        if !found_word {
+            done = true;
         }
     }
-    return (score, found);
+    awe_list.push(AwesomeHash {
+        decorated_hash,
+        score
+    });
+    return awe_list;
+}
+
+pub fn mine_password(hash : &String, all_words : &Vec<String>, big_words : &Vec<String>) -> Vec<AwesomeHash> {
+    let hash = hash.to_ascii_lowercase();
+    let mut awe_list = Vec::new();
+    for word in big_words {
+        if hash.contains(word.as_str()) {
+            let mut finished_awe_list = finish_awesomeness(&hash, word, all_words);
+            awe_list.append(&mut finished_awe_list);
+        }
+    }
+    return awe_list;
 }
 
 pub fn generate_pw(words : &Vec<String>) -> String {
@@ -45,18 +153,20 @@ pub fn generate_pw(words : &Vec<String>) -> String {
 }
 
 fn main() {
-    let words = load_words();
+    let all_words = load_words(false);
+    let big_words = load_words(true);
+    // let before = Instant::now();
     loop {
-        let pw = generate_pw(&words);
+        let pw = generate_pw(&all_words);
         let xoh_hash = xoh_hash(&pw);
-        let (score, found) = mine_password(&xoh_hash, &words);
-        if score > 80 {
-            println!("{:24}\t{:}\t{}\t{}", pw, score, xoh_hash, found.join(" "));
+        let awe_list = mine_password(&xoh_hash, &all_words, &big_words);
+        for awe in awe_list {
+            if awe.score > 50 {
+                println!("{:24}\t{}\t{}", pw, xoh_hash, awe);
+            }
         }
-        // if score > 60 {
-        //     break;
-        // }
     }
+    // println!("Elapsed time: {:2?}",before.elapsed())
 }
 
 #[cfg(test)]
@@ -71,15 +181,25 @@ mod tests {
 
     #[test]
     fn words_load_fine(){
-      let mut word_list = load_words();
+      let mut word_list = load_words(false);
       assert_eq!(3632,word_list.len());
       assert_eq!(String::from("an"), word_list.pop().unwrap());
     }
 
     #[test]
     fn words_no_quotes(){
-        let word_list = load_words();
+        let word_list = load_words(false);
         assert_eq!(word_list.contains(&String::from("doesn't")), false);
+    }
+
+    #[test]
+    fn decorate_simple() {
+        let exp = decorate(&String::from("myword"), "word");
+        assert_eq!("🅜🅨word", exp);
+    }
+    #[test]
+    fn contains_works() {
+        assert_ne!("🅜🅨word", "myword");
     }
 
 }
