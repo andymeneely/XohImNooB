@@ -6,8 +6,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 use std::fmt;
 use std::time::Instant;
-
-
+use rust_bert::pipelines::pos_tagging::POSModel;
 
 pub fn xoh_hash(s: &String) -> String {
     return base64::encode(Sha256::digest(s.as_bytes()));
@@ -19,7 +18,7 @@ pub fn next_word(word_list : &Vec<String>) -> String {
 }
 
 pub fn load_words(only_large : bool) -> Vec<String> {
-    let file = File::open(Path::new("data/xkcd.txt")).expect("Error opening words file");
+    let file = File::open(Path::new("data/xohswords.txt")).expect("Error opening words file");
     let mut v = Vec::new();
     for line in io::BufReader::new(file).lines() {
       let clean = line.expect("Reading error").replace("'","");
@@ -166,8 +165,11 @@ fn main() {
         let xoh_hash = xoh_hash(&pw);
         let awe_list = mine_password(&xoh_hash, &all_words, &big_words);
         for awe in awe_list {
-            if awe.score > 50 {
-                println!("{:24}\t{}\t{}", pw, xoh_hash, awe);
+            if awe.score > 45 {
+                // settling warm crossing          Ns9PucPIimNBGLWSEnt1tLU2SZvatpKTraIN5iBx32Q=    ns9pucpi🅘🅜nbglw🅢🅔🅝🅣1tlu2szv🅐🅣pk🅣🅡🅐🅘🅝5ibx32q=                    49
+
+                // println!("{:24}\t{}\t{}", pw, xoh_hash, awe);
+                println!("{}\n{}", pw, awe.decorated_hash);
             }
         }
         counter += 1;
@@ -195,6 +197,14 @@ mod tests {
         assert_eq!(3630,word_list.len());
         // load sorted by length
         assert_eq!(String::from("understandings"), word_list.pop().unwrap());
+    }
+
+    #[test]
+    fn part_of_speech(){
+        let pos_model = POSModel::new(Default::default()).unwrap();
+        let input = ["Oh I'm Noob"];
+        let output = pos_model.predict(&input);
+        println!("{:?}", output);
     }
 
     #[test]

@@ -310,6 +310,7 @@ interests
 spiriting
 cleanings
 knockings
+quixotic
 soundest
 coatings
 sounders
@@ -2975,6 +2976,7 @@ goods
 waver
 golds
 wears
+noob
 ears
 grab
 fits
@@ -2999,7 +3001,6 @@ pass
 step
 loud
 case
-he
 your
 past
 nods
@@ -3057,7 +3058,6 @@ hand
 shod
 shoe
 gave
-re
 shot
 hall
 fews
@@ -3224,7 +3224,6 @@ rock
 okay
 ages
 mens
-ro
 mans
 tiny
 slid
@@ -3234,7 +3233,7 @@ ok'd
 tire
 wets
 ok'd
-i'll
+ill
 roof
 slip
 full
@@ -3294,7 +3293,7 @@ much
 soft
 join
 beer
-i'll
+ill
 beds
 four
 tree
@@ -3469,7 +3468,6 @@ too
 bit
 tie
 the
-t
 tvs
 tea
 box
@@ -3538,7 +3536,6 @@ pop
 fun
 get
 got
-g
 pay
 own
 out
@@ -3584,11 +3581,9 @@ how
 lit
 lie
 kid
-i'm
+im
 let
-i'm
 leg
-i'd
 i'd
 ice
 led
@@ -3630,3 +3625,4 @@ or
 it
 be
 an
+he
