@@ -1,6 +1,9 @@
 use std::time::Instant;
 use sha2::{Sha256, Digest};
 
+mod found_db;
+use found_db::FoundDB;
+
 mod string_decorator;
 use string_decorator::decorate;
 
@@ -61,22 +64,24 @@ pub fn mine_password(hash : &String, corpus : &XohCorpus) -> Vec<AwesomeHash> {
 fn main() {
     let corpus = XohCorpus::init();
     let before = Instant::now();
+    let mut found = FoundDB::init();
     let mut counter = 0;
+
     loop {
         let pw = generate_pw(&corpus.all_words);
         let xoh_hash = xoh_hash(&pw);
         let awe_list = mine_password(&xoh_hash, &corpus);
         for awe in awe_list {
             if awe.score > 45 {
-                println!("{:24}\t{}\t{}", pw, xoh_hash, awe);
-                println!("{}\n{}", pw, awe.decorated_hash);
+                found.add(&pw, awe);
             }
         }
         counter += 1;
         if counter % 10_000 == 0  {
             let elapsed = before.elapsed();
             let speed = counter as f64 / elapsed.as_secs_f64();
-            println!("Finished {:10} in time: {:.2?} or {:.1}/s",counter, elapsed, speed)
+            println!("Finished {:10} in time: {:.2?} or {:.1}/s, {}",counter, elapsed, speed, found.report());
+            found.save();
         }
     }
 }

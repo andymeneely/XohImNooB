@@ -10,4 +10,5 @@ base64 = "0.13.0"
 hex-literal = "0.3.3"
 rand = "0.8.4"
 regex = "1.5.4"
-rust-bert = "0.16.0"
+serde = { version = "1.0.130", features = ["derive"] }
+serde_yaml = "0.8.21"
