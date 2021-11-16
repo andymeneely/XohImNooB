@@ -5,6 +5,7 @@ use std::fmt;
 
 #[derive(Serialize, Deserialize, PartialOrd, PartialEq, Eq)]
 pub struct AwesomeHash {
+  pub pw : String,
   pub decorated_hash : String,
   pub score: u32,
   pub words : Vec<String>,

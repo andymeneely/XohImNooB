@@ -20,48 +20,44 @@ pub fn xoh_hash(s: &String) -> String {
     return base64::encode(Sha256::digest(s.as_bytes()));
 }
 
-pub fn finish_awesomeness(hash : &String, big_word : &str, all_words : &Vec<String>) -> Vec<AwesomeHash> {
-    let mut score = big_word.len() as u32 * big_word.len() as u32;
-    let mut awe_list = Vec::new();
-    let mut words = vec![String::from(""); SHA_BYTE_LENGTH]; //
-
-    let mut decorated_hash = decorate(hash, big_word);
-    let mut done  = false;
-    while !done {
-        let mut found_word = false;
-        for word in all_words { //this isn't exhaustive but whatevs
-            if let Some(i) = decorated_hash.find(word) {
-                done = false;
-                found_word = true;
-                decorated_hash = decorate(&decorated_hash, word);
-                words[i] = format!("{} ", word); //append space
-                score += word.len() as u32 * word.len() as u32;
-            }
-        }
-        if !found_word {
-            done = true;
-        }
-    }
-    awe_list.push(AwesomeHash {
-        decorated_hash,
-        score,
-        words,
-    });
-    return awe_list;
-}
-
-pub fn mine_password(hash : &String, corpus : &XohCorpus) -> Vec<AwesomeHash> {
+pub fn mine_xoh(pw: String, hash : &String, corpus : &XohCorpus) -> Option<AwesomeHash> {
     let all_words = &corpus.all_words;
     let big_words = &corpus.big_words;
+    let mut decorated_hash = String::from(hash);
     let hash = hash.to_ascii_lowercase();
-    let mut awe_list = Vec::new();
+    let mut words = vec![String::from(""); SHA_BYTE_LENGTH];
+    let found = false;
+    let mut score = 0;
     for word in big_words {
         if hash.contains(word.as_str()) {
-            let mut finished_awe_list = finish_awesomeness(&hash, word, all_words);
-            awe_list.append(&mut finished_awe_list);
+            let mut done = false;
+            while !done {
+                let mut found_word = false;
+                for word in all_words {
+                    if let Some(i) = decorated_hash.find(word) {
+                        done = false;
+                        found_word = true;
+                        decorated_hash = decorate(&decorated_hash, word);
+                        words[i] = format!("{} ", word); //append space
+                        score += word.len() as u32 * word.len() as u32;
+                    }
+                }
+                if !found_word {
+                    done = true;
+                }
+            }
         }
     }
-    return awe_list;
+    if found {
+        return Some(AwesomeHash{
+            pw,
+            decorated_hash,
+            score,
+            words,
+        });
+    } else {
+        return None;
+    }
 }
 
 fn main() {
@@ -73,11 +69,14 @@ fn main() {
     loop {
         let pw = generate_pw(&corpus.all_words);
         let xoh_hash = xoh_hash(&pw);
-        let awe_list = mine_password(&xoh_hash, &corpus);
-        for awe in awe_list {
-            if awe.score > 48 {
-                found.add(&pw, awe);
-            }
+        match mine_xoh(pw, &xoh_hash, &corpus) {
+            Some(awe) => {
+                if awe.score > 48 {
+                    found.add(awe);
+
+                }
+            },
+            None => (),
         }
         counter += 1;
         if counter % 10_000 == 0  {

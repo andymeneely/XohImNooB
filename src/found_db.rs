@@ -36,9 +36,9 @@ impl FoundDB {
     return serde_yaml::from_str(found_yml.as_str()).expect("Could not parse data/found.yml");
    }
 
-  pub fn add(&mut self, pw: &str, awe : AwesomeHash) {
+  pub fn add(&mut self, awe : AwesomeHash) {
     let e  = FoundDBEntry {
-      pw:String::from(pw),
+      pw: awe.pw,
       decorated_hash: awe.decorated_hash.to_string(),
       score: awe.score,
       words: awe.words.join("")
