@@ -17,6 +17,10 @@ So that leads us on the quixotic journey of seeing what else we can find in base
 
 # Corpus?
 
+See [data/xohswords.txt](data/xohswords.txt).
+
 I started from the [XKCD's Thing Explainer dictionary](https://xkcd.com/1133/), from the [simplewriter tool](https://xkcd.com/simplewriter/).
 
 Removed one-letter words and added some others.
+
+Then added https://github.com/first20hours/google-10000-english and did some of my own editing.
