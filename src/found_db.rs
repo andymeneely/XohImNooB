@@ -73,7 +73,7 @@ mod tests {
     fn test_hash_saved(){
       let mut found_db = FoundDB::init();
       found_db.add( AwesomeHash{
-        pw : "foo",
+        pw : String::from("foo"),
         score: 2,
         decorated_hash: String::from("foo"),
         words: vec![]
