@@ -72,7 +72,7 @@ fn main() {
         let xoh_hash = xoh_hash(&pw);
         let awe_list = mine_password(&xoh_hash, &corpus);
         for awe in awe_list {
-            if awe.score > 45 {
+            if awe.score > 48 {
                 found.add(&pw, awe);
             }
         }
