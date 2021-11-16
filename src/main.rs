@@ -14,6 +14,8 @@ mod xoh_corpus;
 use xoh_corpus::XohCorpus;
 use xoh_corpus::generate_pw;
 
+const SHA_BYTE_LENGTH : usize = 176;
+
 pub fn xoh_hash(s: &String) -> String {
     return base64::encode(Sha256::digest(s.as_bytes()));
 }
@@ -21,18 +23,18 @@ pub fn xoh_hash(s: &String) -> String {
 pub fn finish_awesomeness(hash : &String, big_word : &str, all_words : &Vec<String>) -> Vec<AwesomeHash> {
     let mut score = big_word.len() as u32 * big_word.len() as u32;
     let mut awe_list = Vec::new();
-    let mut word_list = Vec::new();
+    let mut words = vec![String::from(""); SHA_BYTE_LENGTH]; //
 
     let mut decorated_hash = decorate(hash, big_word);
     let mut done  = false;
     while !done {
         let mut found_word = false;
         for word in all_words { //this isn't exhaustive but whatevs
-            if decorated_hash.contains(word) {
+            if let Some(i) = decorated_hash.find(word) {
                 done = false;
                 found_word = true;
                 decorated_hash = decorate(&decorated_hash, word);
-                word_list.push(word);
+                words[i] = format!("{} ", word); //append space
                 score += word.len() as u32 * word.len() as u32;
             }
         }
@@ -42,7 +44,8 @@ pub fn finish_awesomeness(hash : &String, big_word : &str, all_words : &Vec<Stri
     }
     awe_list.push(AwesomeHash {
         decorated_hash,
-        score
+        score,
+        words,
     });
     return awe_list;
 }
@@ -96,5 +99,11 @@ mod tests {
         assert_eq!(str, xoh_hash(&String::from("password")))
     }
 
+    #[test]
+    fn string_index_confusion(){
+        let str = "🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨";
+        assert_eq!(44, str.chars().count());
+        assert_eq!(SHA_BYTE_LENGTH, str.as_bytes().len());
+    }
 
 }

@@ -7,6 +7,7 @@ use std::fmt;
 pub struct AwesomeHash {
   pub decorated_hash : String,
   pub score: u32,
+  pub words : Vec<String>,
 }
 
 impl fmt::Display for AwesomeHash {
