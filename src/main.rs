@@ -14,13 +14,24 @@ mod xoh_corpus;
 use xoh_corpus::XohCorpus;
 use xoh_corpus::generate_pw;
 
-mod xoh_trie;
-use crate::xoh_trie::XohTrie;
-
 const SHA_BYTE_LENGTH : usize = 176;
 
 pub fn xoh_hash(s: &String) -> String {
     return base64::encode(Sha256::digest(s.as_bytes()));
+}
+
+pub fn fast_mine_xoh(_pw: String, hash : &String, corpus : &XohCorpus) -> String {
+    let n = hash.chars().count() + 1;
+    let hash_str = hash.as_str();
+    for i in 0..n {
+        for j in (i+1..n).rev() {
+            let sub_str = &hash_str[i..j];
+            if corpus.is_word(sub_str) {
+                return String::from(sub_str)
+            }
+        }
+    }
+    String::from("")
 }
 
 pub fn mine_xoh(pw: String, hash : &String, corpus : &XohCorpus) -> Option<AwesomeHash> {
@@ -64,7 +75,6 @@ pub fn mine_xoh(pw: String, hash : &String, corpus : &XohCorpus) -> Option<Aweso
 }
 
 fn main() {
-    let _trie = XohTrie::new();
     let corpus = XohCorpus::init();
     let before = Instant::now();
     let mut found = FoundDB::init();
@@ -94,6 +104,8 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+    use trie_rs::TrieBuilder;
+
     use super::*;
 
     #[test]
@@ -107,6 +119,20 @@ mod tests {
         let str = "🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨";
         assert_eq!(44, str.chars().count());
         assert_eq!(SHA_BYTE_LENGTH, str.as_bytes().len());
+    }
+
+    #[test]
+    fn fast_mine_xoh_easy(){
+        let mut corpus = XohCorpus::init();
+        let mut builder = TrieBuilder::new();
+        builder.push("ab");
+        builder.push("abc");
+        builder.push("abcd");
+        let trie = builder.build();
+        corpus.trie = trie;
+        let hash = "---abc-----";
+        let result = fast_mine_xoh(String::from(""), &String::from(hash), &corpus);
+        assert_eq!("abc", result);
     }
 
 }

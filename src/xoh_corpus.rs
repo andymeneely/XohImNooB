@@ -3,18 +3,30 @@ use rand::seq::SliceRandom;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
+use trie_rs::{Trie, TrieBuilder};
 
 pub struct XohCorpus{
   pub all_words : Vec<String>,
   pub big_words : Vec<String>,
+  pub trie : Trie<u8>
 }
 
 impl XohCorpus {
   pub fn init() -> XohCorpus {
-      XohCorpus {
-        all_words : load_words(false),
-        big_words : load_words(true),
+      let mut builder = TrieBuilder::new();
+      let all_words = load_words(false);
+      for word in all_words.iter() {
+        builder.push(word);
       }
+      XohCorpus {
+        all_words,
+        big_words : load_words(true),
+        trie : builder.build()
+      }
+  }
+
+  pub fn is_word(&self, word : &str) -> bool {
+    self.trie.exact_match(word)
   }
 }
 
@@ -74,4 +86,16 @@ mod tests {
       let word_list = load_words(false);
       assert_eq!(word_list.contains(&String::from("doesn't")), false);
   }
+
+  #[test]
+  fn play_with_trie(){
+    let mut builder = TrieBuilder::new();
+    builder.push("a");
+    builder.push("abc");
+    let trie = builder.build();
+    assert_eq!(true, trie.exact_match("a"));
+    assert_eq!(false, trie.exact_match("ab"));
+    assert_eq!(true, trie.exact_match("abc"));
+  }
+
 }
