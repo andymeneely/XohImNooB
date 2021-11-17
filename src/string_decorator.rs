@@ -65,7 +65,7 @@ mod tests {
   use super::*;
   #[test]
   fn decorate_simple() {
-      let exp = decorate(&String::from("myword"), "word");
+      let exp = decorate(&String::from("myword"), "my");
       assert_eq!("🅜🅨word", exp);
   }
   #[test]

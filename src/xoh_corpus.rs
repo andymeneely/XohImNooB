@@ -8,20 +8,26 @@ use trie_rs::{Trie, TrieBuilder};
 pub struct XohCorpus{
   pub all_words : Vec<String>,
   pub big_words : Vec<String>,
-  pub trie : Trie<u8>
+  pub trie : Trie<u8>,
+  pub longest : usize
 }
 
 impl XohCorpus {
   pub fn init() -> XohCorpus {
       let mut builder = TrieBuilder::new();
       let all_words = load_words(false);
+      let mut longest = 0;
       for word in all_words.iter() {
         builder.push(word);
+        if word.len() > longest {
+          longest = word.len();
+        }
       }
       XohCorpus {
         all_words,
         big_words : load_words(true),
-        trie : builder.build()
+        trie : builder.build(),
+        longest
       }
   }
 
@@ -68,9 +74,9 @@ mod tests {
   #[test]
   fn words_load_fine(){
       let mut word_list = load_words(false);
-      assert_eq!(3630,word_list.len());
+      assert_eq!(true, word_list.len() > 3000);
       // load sorted by length
-      assert_eq!(String::from("understandings"), word_list.pop().unwrap());
+      assert_eq!(String::from("telecommunications"), word_list.pop().unwrap());
   }
 
   // #[test]

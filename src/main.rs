@@ -1,3 +1,5 @@
+use std::cmp;
+
 use std::time::Instant;
 use sha2::{Sha256, Digest};
 
@@ -20,18 +22,19 @@ pub fn xoh_hash(s: &String) -> String {
     return base64::encode(Sha256::digest(s.as_bytes()));
 }
 
-pub fn fast_mine_xoh(_pw: String, hash : &String, corpus : &XohCorpus) -> String {
+pub fn fast_mine_xoh(_pw: String, hash : &String, corpus : &XohCorpus) -> Option<String> {
     let n = hash.chars().count() + 1;
     let hash_str = hash.as_str();
     for i in 0..n {
-        for j in (i+1..n).rev() {
+        let end = cmp::min(hash.len() - i, i + corpus.longest + 1);
+        for j in ((i + 1)..end).rev() {
             let sub_str = &hash_str[i..j];
             if corpus.is_word(sub_str) {
-                return String::from(sub_str)
+                return Some(String::from(sub_str))
             }
         }
     }
-    String::from("")
+    None
 }
 
 pub fn mine_xoh(pw: String, hash : &String, corpus : &XohCorpus) -> Option<AwesomeHash> {
@@ -87,7 +90,6 @@ fn main() {
             Some(awe) => {
                 if awe.score > 48 {
                     found.add(awe);
-
                 }
             },
             None => (),
@@ -132,7 +134,7 @@ mod tests {
         corpus.trie = trie;
         let hash = "---abc-----";
         let result = fast_mine_xoh(String::from(""), &String::from(hash), &corpus);
-        assert_eq!("abc", result);
+        assert_eq!("abc", result.unwrap());
     }
 
 }
