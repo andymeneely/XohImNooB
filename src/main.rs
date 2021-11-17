@@ -14,6 +14,9 @@ mod xoh_corpus;
 use xoh_corpus::XohCorpus;
 use xoh_corpus::generate_pw;
 
+mod xoh_trie;
+use crate::xoh_trie::XohTrie;
+
 const SHA_BYTE_LENGTH : usize = 176;
 
 pub fn xoh_hash(s: &String) -> String {
@@ -61,6 +64,7 @@ pub fn mine_xoh(pw: String, hash : &String, corpus : &XohCorpus) -> Option<Aweso
 }
 
 fn main() {
+    let _trie = XohTrie::new();
     let corpus = XohCorpus::init();
     let before = Instant::now();
     let mut found = FoundDB::init();
