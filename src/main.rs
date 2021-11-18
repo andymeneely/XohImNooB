@@ -22,13 +22,12 @@ pub fn xoh_hash(s: &String) -> String {
     return base64::encode(Sha256::digest(s.as_bytes()));
 }
 
-pub fn fast_mine_xoh(_pw: String, hash : &String, corpus : &XohCorpus) -> Option<String> {
+pub fn fast_mine_xoh(hash : &str, corpus : &XohCorpus) -> Option<String> {
     let n = hash.chars().count() + 1;
-    let hash_str = hash.as_str();
     for i in 0..n {
         let end = cmp::min(hash.len() - i, i + corpus.longest + 1);
         for j in ((i + 1)..end).rev() {
-            let sub_str = &hash_str[i..j];
+            let sub_str = &hash[i..j];
             if corpus.is_word(sub_str) {
                 return Some(String::from(sub_str))
             }
@@ -38,44 +37,68 @@ pub fn fast_mine_xoh(_pw: String, hash : &String, corpus : &XohCorpus) -> Option
 }
 
 pub fn mine_xoh(pw: String, hash : &String, corpus : &XohCorpus) -> Option<AwesomeHash> {
-    let all_words = &corpus.all_words;
-    let big_words = &corpus.big_words;
-    let mut decorated_hash = String::from(hash);
-    let hash = hash.to_ascii_lowercase();
-    let mut words = vec![String::from(""); SHA_BYTE_LENGTH];
-    let found = false;
-    let mut score = 0;
-    for word in big_words {
-        if hash.contains(word.as_str()) {
-            let mut done = false;
-            while !done {
-                let mut found_word = false;
-                for word in all_words {
-                    if let Some(i) = decorated_hash.find(word) {
-                        done = false;
-                        found_word = true;
-                        decorated_hash = decorate(&decorated_hash, word);
-                        words[i] = format!("{} ", word); //append space
-                        score += word.len() as u32 * word.len() as u32;
-                    }
-                }
-                if !found_word {
-                    done = true;
-                }
-            }
-        }
-    }
-    if found {
-        return Some(AwesomeHash{
-            pw,
-            decorated_hash,
-            score,
-            words,
-        });
-    } else {
-        return None;
-    }
+    None
+    // let mut score = 0;
+    // let mut done = false;
+    // let mut mined = Some(String::from(hash.to_lowercase())) ;//FIXME: preserve case for final output, but search lowercase
+    // while !done {
+    //     mined.map()
+    //     mined = fast_mine_xoh(mined.unwrap().as_str(), corpus);
+    //     mined = mined.map(|word|{
+    //         score += word.len() * word.len();
+    //         decorate(&decorated_hash, word.as_str())
+    //     });
+    //     done = mined.is_none();
+    // }
+    // mined.map(|str|{
+    //     AwesomeHash{
+    //         pw,
+    //         decorated_hash: str,
+    //         score : score as u32,
+    //         words: vec![],
+    //     }
+    // })
 }
+
+// pub fn mine_xoh(pw: String, hash : &String, corpus : &XohCorpus) -> Option<AwesomeHash> {
+//     let all_words = &corpus.all_words;
+//     let big_words = &corpus.big_words;
+//     let mut decorated_hash = String::from(hash);
+//     let hash = hash.to_ascii_lowercase();
+//     let mut words = vec![String::from(""); SHA_BYTE_LENGTH];
+//     let found = false;
+//     let mut score = 0;
+//     for word in big_words {
+//         if hash.contains(word.as_str()) {
+//             let mut done = false;
+//             while !done {
+//                 let mut found_word = false;
+//                 for word in all_words {
+//                     if let Some(i) = decorated_hash.find(word) {
+//                         done = false;
+//                         found_word = true;
+//                         decorated_hash = decorate(&decorated_hash, word);
+//                         words[i] = format!("{} ", word); //append space
+//                         score += word.len() as u32 * word.len() as u32;
+//                     }
+//                 }
+//                 if !found_word {
+//                     done = true;
+//                 }
+//             }
+//         }
+//     }
+//     if found {
+//         return Some(AwesomeHash{
+//             pw,
+//             decorated_hash,
+//             score,
+//             words,
+//         });
+//     } else {
+//         return None;
+//     }
+// }
 
 fn main() {
     let corpus = XohCorpus::init();
@@ -133,8 +156,10 @@ mod tests {
         let trie = builder.build();
         corpus.trie = trie;
         let hash = "---abc-----";
-        let result = fast_mine_xoh(String::from(""), &String::from(hash), &corpus);
+        let result = fast_mine_xoh( &String::from(hash), &corpus);
         assert_eq!("abc", result.unwrap());
     }
+
+
 
 }
