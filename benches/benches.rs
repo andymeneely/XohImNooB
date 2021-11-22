@@ -11,7 +11,7 @@ use test::Bencher;
 #[bench]
 fn single_fast_mine_xoh(b: &mut Bencher) {
   let corpus =XohCorpus::new();
-  let pw = corpus.generate_pw();
+  let pw = xoh_hash(corpus.generate_pw().as_str());
   b.iter(|| {
     fast_mine_xoh(pw.as_str(), &corpus)
   })
@@ -19,7 +19,7 @@ fn single_fast_mine_xoh(b: &mut Bencher) {
 
 #[bench]
 fn bench_new_mine_xoh(b: &mut Bencher){
-  let corpus =XohCorpus::new();
+  let corpus = XohCorpus::new();
   let pw = corpus.generate_pw();
   let pw_str = pw.as_str();
   let hash = xoh_hash(pw_str);
@@ -29,7 +29,20 @@ fn bench_new_mine_xoh(b: &mut Bencher){
 }
 
 #[bench]
-fn bench_brute_mine_xoh(b: &mut Bencher){
+fn bench_worst_contains(b: &mut Bencher) {
+  let corpus = XohCorpus::new();
+  let str = "🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨🅨";
+  let mut done = false;
+  let all_words = corpus.all_words;
+  b.iter(|| {
+    for w in all_words.to_owned() {
+      done = done && str.contains(w.as_str());
+    }
+  })
+}
+
+#[bench]
+fn bench_brute_mine_xoh(b: &mut Bencher) {
   let corpus =XohCorpus::new();
   let pw = corpus.generate_pw();
   let pw_str = pw.as_str();

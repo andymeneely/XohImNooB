@@ -1,4 +1,6 @@
-// use std::cmp;
+use std::collections::HashMap;
+
+use std::cmp;
 use sha2::{Digest, Sha256};
 
 pub mod xoh_corpus;
@@ -18,13 +20,17 @@ pub fn xoh_hash(s: &str) -> String {
 
 pub fn fast_mine_xoh(hash: &str, corpus: &XohCorpus) -> Option<String> {
     let n = hash.chars().count();
-    for i in 0..n - 1 {
-        // let end = cmp::min(hash.len() - i, i + corpus.longest + 1);
-
-        for j in ((i + 1)..n).rev() {
-            // println!("{},{}", i, j);
-            let ith_byte_index = hash.char_indices().nth(i).unwrap().0;
-            let jth_byte_index = hash.char_indices().nth(j).unwrap().0;
+    let mut char2byte_index : HashMap<usize, usize> = HashMap::new();
+    let mut i_char = 0;
+    for (byte_i, _c) in hash.char_indices() {
+        char2byte_index.insert(i_char, byte_i);
+        i_char += 1;
+    }
+    for i in 0..n - 1 { //i,j iterating over chars, not bytes
+        let end = cmp::min(hash.len() - i, i + corpus.longest + 1);
+        for j in ((i + 1)..end).rev() {
+            let ith_byte_index = char2byte_index.get(&i).unwrap().to_owned();
+            let jth_byte_index = char2byte_index.get(&j).unwrap().to_owned();
             let sub_str = &hash[ith_byte_index..jth_byte_index];
             if corpus.is_word(sub_str) {
                 return Some(String::from(sub_str));
