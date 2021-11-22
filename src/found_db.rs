@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::{cmp::Ordering, fs};
 
-use crate::awesome_hash::AwesomeHash;
+use xohimnoob::awesome_hash::AwesomeHash;
 
 #[derive(Serialize, Deserialize)]
 pub struct FoundDB {

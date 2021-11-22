@@ -2,7 +2,9 @@
 name = "xohimnoob"
 version = "0.1.0"
 authors = ["Andy Meneely <andy@se.rit.edu>"]
-edition = "2018"
+edition = "2021"
+
+
 
 [dependencies]
 sha2 = "0.9.8"

@@ -13,7 +13,7 @@ pub struct XohCorpus{
 }
 
 impl XohCorpus {
-  pub fn init() -> XohCorpus {
+  pub fn new() -> XohCorpus {
       let mut builder = TrieBuilder::new();
       let all_words = load_words(false);
       let mut longest = 0;
@@ -34,13 +34,19 @@ impl XohCorpus {
   pub fn is_word(&self, word : &str) -> bool {
     self.trie.exact_match(word)
   }
-}
 
-pub fn generate_pw(words : &Vec<String>) -> String {
-  let pw = next_word(&words);
-  let pw2 = next_word(&words);
-  let pw3 = next_word(&words);
-  return format!("{} {} {}", pw , pw2, pw3);
+  pub fn generate_pw(&self) -> String {
+    let words = &self.all_words;
+    let pw = self.next_word(words);
+    let pw2 = self.next_word(words);
+    let pw3 = self.next_word(words);
+    return format!("{} {} {}", pw , pw2, pw3);
+  }
+
+  fn next_word(&self, word_list : &Vec<String>) -> String {
+    let mut rng = thread_rng();
+    return word_list.choose(&mut rng).expect("Error getting word").to_string();
+  }
 }
 
 fn load_words(only_large : bool) -> Vec<String> {
@@ -62,10 +68,7 @@ fn load_words(only_large : bool) -> Vec<String> {
   return v;
 }
 
-fn next_word(word_list : &Vec<String>) -> String {
-  let mut rng = thread_rng();
-  return word_list.choose(&mut rng).expect("Error getting word").to_string();
-}
+
 
 #[cfg(test)]
 mod tests {
