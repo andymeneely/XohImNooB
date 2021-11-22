@@ -23,11 +23,15 @@ pub fn xoh_hash(s: &String) -> String {
 }
 
 pub fn fast_mine_xoh(hash : &str, corpus : &XohCorpus) -> Option<String> {
-    let n = hash.chars().count() + 1;
-    for i in 0..n {
-        let end = cmp::min(hash.len() - i, i + corpus.longest + 1);
-        for j in ((i + 1)..end).rev() {
-            let sub_str = &hash[i..j];
+    let n = hash.chars().count();
+    for i in 0..n-1 {
+        // let end = cmp::min(hash.len() - i, i + corpus.longest + 1);
+        
+        for j in ((i + 1)..n).rev() {
+            // println!("{},{}", i, j);
+            let ith_byte_index = hash.char_indices().nth(i).unwrap().0;
+            let jth_byte_index = hash.char_indices().nth(j).unwrap().0;
+            let sub_str = &hash[ith_byte_index..jth_byte_index];
             if corpus.is_word(sub_str) {
                 return Some(String::from(sub_str))
             }
@@ -36,28 +40,29 @@ pub fn fast_mine_xoh(hash : &str, corpus : &XohCorpus) -> Option<String> {
     None
 }
 
-pub fn mine_xoh(pw: String, hash : &String, corpus : &XohCorpus) -> Option<AwesomeHash> {
-    None
-    // let mut score = 0;
-    // let mut done = false;
-    // let mut mined = Some(String::from(hash.to_lowercase())) ;//FIXME: preserve case for final output, but search lowercase
+pub fn mine_xoh(pw: String, hash : &str, corpus : &XohCorpus) -> AwesomeHash {
+    let mut score = 0;
+    let mut decorated_hash = hash.to_lowercase();
+    let mut done = false;
     // while !done {
-    //     mined.map()
-    //     mined = fast_mine_xoh(mined.unwrap().as_str(), corpus);
-    //     mined = mined.map(|word|{
-    //         score += word.len() * word.len();
-    //         decorate(&decorated_hash, word.as_str())
-    //     });
-    //     done = mined.is_none();
+        let mined = fast_mine_xoh(&decorated_hash, corpus);
+        match mined {
+            Some(word) => {
+                score += word.len() * word.len();
+                let new_decorated_hash = decorate(&decorated_hash.as_str(), word.as_str());
+                decorated_hash = new_decorated_hash;
+            },
+            None => done = true
+        }
     // }
-    // mined.map(|str|{
-    //     AwesomeHash{
-    //         pw,
-    //         decorated_hash: str,
-    //         score : score as u32,
-    //         words: vec![],
-    //     }
-    // })
+    
+    AwesomeHash{
+        pw,
+        decorated_hash: String::from(decorated_hash),
+        score : score as u32,
+        words: vec![],
+     }
+    
 }
 
 // pub fn mine_xoh(pw: String, hash : &String, corpus : &XohCorpus) -> Option<AwesomeHash> {
@@ -109,13 +114,9 @@ fn main() {
     loop {
         let pw = generate_pw(&corpus.all_words);
         let xoh_hash = xoh_hash(&pw);
-        match mine_xoh(pw, &xoh_hash, &corpus) {
-            Some(awe) => {
-                if awe.score > 48 {
-                    found.add(awe);
-                }
-            },
-            None => (),
+        let awe = mine_xoh(pw, &xoh_hash, &corpus);
+        if awe.score > 48 {
+            found.add(awe);
         }
         counter += 1;
         if counter % 10_000 == 0  {
@@ -161,5 +162,18 @@ mod tests {
     }
 
 
+    #[test]
+    fn fast_mine_xoh_already_decorated(){
+        let mut corpus = XohCorpus::init();
+        let mut builder = TrieBuilder::new();
+        builder.push("ab");
+        builder.push("abc");
+        builder.push("abcd");
+        let trie = builder.build();
+        corpus.trie = trie;
+        let hash = "---🅨abc🅨---";
+        let result = fast_mine_xoh( &String::from(hash), &corpus);
+        assert_eq!("abc", result.unwrap());
+    }
 
 }

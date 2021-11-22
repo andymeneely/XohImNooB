@@ -48,3 +48,19 @@ db:
     decorated_hash: cdqsquwigjvl2gn7u🅑🅤🅛🅛🅔🅣mki🅗🅐gplx🅖🅤🅝thkjzwvu=
     score: 49
     words: "ha gun "
+  - pw: foo
+    decorated_hash: foo
+    score: 2
+    words: ""
+  - pw: foo
+    decorated_hash: foo
+    score: 2
+    words: ""
+  - pw: foo
+    decorated_hash: foo
+    score: 2
+    words: ""
+  - pw: foo
+    decorated_hash: foo
+    score: 2
+    words: ""
