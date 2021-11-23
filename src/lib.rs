@@ -26,8 +26,8 @@ pub fn fast_mine_xoh(hash: &str, corpus: &XohCorpus) -> Option<String> {
         char2byte_index.insert(i_char, byte_i);
         i_char += 1;
     }
-    for i in 0..n - 1 { //i,j iterating over chars, not bytes
-        let end = cmp::min(hash.len() - 1 - i, i + corpus.longest + 1);
+    for i in 0..n - 2 { //i,j iterating over chars, not bytes
+        let end = cmp::min(n - 1 - i, i + corpus.longest);
         for j in ((i + 1)..end).rev() {
             let ith_byte_index = char2byte_index.get(&i).unwrap().to_owned();
             let jth_byte_index = char2byte_index.get(&j).unwrap().to_owned();
@@ -109,7 +109,6 @@ mod tests {
     use std::collections::HashSet;
 
     use super::*;
-    use trie_rs::TrieBuilder;
 
     #[test]
     fn hash_works() {
@@ -127,12 +126,6 @@ mod tests {
     #[test]
     fn fast_mine_xoh_easy() {
         let mut corpus = XohCorpus::new();
-        // let mut builder = TrieBuilder::new();
-        // builder.push("ab");
-        // builder.push("abc");
-        // builder.push("abcd");
-        // let trie = builder.build();
-        // corpus.trie = trie;
         let mut cache:HashSet<Vec<u8>> = HashSet::new();
         cache.insert("ab".into());
         cache.insert("abc".into());
@@ -146,12 +139,6 @@ mod tests {
     #[test]
     fn fast_mine_xoh_already_decorated() {
         let mut corpus = XohCorpus::new();
-        // let mut builder = TrieBuilder::new();
-        // builder.push("ab");
-        // builder.push("abc");
-        // builder.push("abcd");
-        // let trie = builder.build();
-        // corpus.trie = trie;
         let mut cache = HashSet::new();
         cache.insert("ab".into());
         cache.insert("abc".into());
