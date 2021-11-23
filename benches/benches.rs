@@ -51,3 +51,14 @@ fn bench_brute_mine_xoh(b: &mut Bencher) {
     brute_mine_xoh(pw_str, &hash, &corpus)
   })
 }
+
+#[bench]
+fn fast_is_word(b: &mut Bencher) {
+  let corpus =XohCorpus::new();
+  let str = xoh_hash(corpus.generate_pw().as_str());
+  b.iter(|| {
+    corpus.is_word(str.as_str());
+  })
+}
+
+

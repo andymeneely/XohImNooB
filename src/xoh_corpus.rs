@@ -1,24 +1,31 @@
 use rand::thread_rng;
 use rand::seq::SliceRandom;
+use std::collections::HashSet;
 use std::fs::File;
 use std::io::{self, BufRead};
+use std::ops::RangeBounds;
 use std::path::Path;
 use trie_rs::{Trie, TrieBuilder};
 
 pub struct XohCorpus{
   pub all_words : Vec<String>,
   pub big_words : Vec<String>,
-  pub trie : Trie<u8>,
+  // pub trie : Trie<u8>,
+  pub cache : HashSet<Vec<u8>>,
   pub longest : usize
 }
 
 impl XohCorpus {
   pub fn new() -> XohCorpus {
-      let mut builder = TrieBuilder::new();
+      // let mut builder = TrieBuilder::new();
       let all_words = load_words(false);
       let mut longest = 0;
-      for word in all_words.iter() {
-        builder.push(word);
+      let mut cache = HashSet::new();
+      for word in &all_words {
+        // builder.push(word);
+
+        let word_str = word.as_bytes().into();
+        cache.insert(word_str);
         if word.len() > longest {
           longest = word.len();
         }
@@ -26,13 +33,15 @@ impl XohCorpus {
       XohCorpus {
         all_words,
         big_words : load_words(true),
-        trie : builder.build(),
+        // trie : builder.build(),
+        cache,
         longest
       }
   }
 
   pub fn is_word(&self, word : &str) -> bool {
-    self.trie.exact_match(word)
+    return self.cache.contains(word.as_bytes());
+    // self.trie.exact_match(word)
   }
 
   pub fn generate_pw(&self) -> String {

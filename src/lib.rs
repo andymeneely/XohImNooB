@@ -27,7 +27,7 @@ pub fn fast_mine_xoh(hash: &str, corpus: &XohCorpus) -> Option<String> {
         i_char += 1;
     }
     for i in 0..n - 1 { //i,j iterating over chars, not bytes
-        let end = cmp::min(hash.len() - i, i + corpus.longest + 1);
+        let end = cmp::min(hash.len() - 1 - i, i + corpus.longest + 1);
         for j in ((i + 1)..end).rev() {
             let ith_byte_index = char2byte_index.get(&i).unwrap().to_owned();
             let jth_byte_index = char2byte_index.get(&j).unwrap().to_owned();
@@ -106,6 +106,8 @@ pub fn brute_mine_xoh(pw: &str, hash: &String, corpus: &XohCorpus) -> Option<Awe
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
+
     use super::*;
     use trie_rs::TrieBuilder;
 
@@ -125,12 +127,17 @@ mod tests {
     #[test]
     fn fast_mine_xoh_easy() {
         let mut corpus = XohCorpus::new();
-        let mut builder = TrieBuilder::new();
-        builder.push("ab");
-        builder.push("abc");
-        builder.push("abcd");
-        let trie = builder.build();
-        corpus.trie = trie;
+        // let mut builder = TrieBuilder::new();
+        // builder.push("ab");
+        // builder.push("abc");
+        // builder.push("abcd");
+        // let trie = builder.build();
+        // corpus.trie = trie;
+        let mut cache:HashSet<Vec<u8>> = HashSet::new();
+        cache.insert("ab".into());
+        cache.insert("abc".into());
+        cache.insert("abcd".into());
+        corpus.cache = cache;
         let hash = "---abc-----";
         let result = fast_mine_xoh(&String::from(hash), &corpus);
         assert_eq!("abc", result.unwrap());
@@ -139,12 +146,17 @@ mod tests {
     #[test]
     fn fast_mine_xoh_already_decorated() {
         let mut corpus = XohCorpus::new();
-        let mut builder = TrieBuilder::new();
-        builder.push("ab");
-        builder.push("abc");
-        builder.push("abcd");
-        let trie = builder.build();
-        corpus.trie = trie;
+        // let mut builder = TrieBuilder::new();
+        // builder.push("ab");
+        // builder.push("abc");
+        // builder.push("abcd");
+        // let trie = builder.build();
+        // corpus.trie = trie;
+        let mut cache = HashSet::new();
+        cache.insert("ab".into());
+        cache.insert("abc".into());
+        cache.insert("abcd".into());
+        corpus.cache = cache;
         let hash = "---🅨abc🅨---";
         let result = fast_mine_xoh(&String::from(hash), &corpus);
         assert_eq!("abc", result.unwrap());
